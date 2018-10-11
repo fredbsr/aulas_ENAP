@@ -20,7 +20,7 @@ out <- apistrat %>%
   mutate(hs_grad_pct = cut(hsg, c(0, 20, 100), include.lowest = TRUE,
                            labels = c("<20%", "20+%"))) %>%
   group_by(stype, hs_grad_pct) %>%
-  summarize(api_diff = weighted.mean(api00 - api99, pw),
+  summarize(api_diff = mean(api00 - api99, na.rm=T),
             n = n())
 
 ggplot(data = out, aes(x = stype, y = api_diff, group = hs_grad_pct, fill = hs_grad_pct)) +
@@ -29,21 +29,21 @@ ggplot(data = out, aes(x = stype, y = api_diff, group = hs_grad_pct, fill = hs_g
 
 
 # simple random sample
-srs_design_srvyr <- apisrs %>% as_survey_design(ids = 1, fpc = fpc)
-
-srs_design_survey <- svydesign(ids = ~1, fpc = ~fpc, data = apisrs)
+srs_design_srvyr <- apisrs %>% 
+  as_survey_design(ids = 1, fpc = fpc)
 
 
 strat_design_srvyr <- apistrat %>%
-  as_survey_design(1, strata = stype, fpc = fpc, weight = pw,
+  as_survey_design(1, 
+                   strata = stype, 
+                   fpc = fpc, 
+                   weight = pw,
                    variables = c(stype, starts_with("api")))
 
-strat_design_survey <- svydesign(~1, strata = ~stype, fpc = ~fpc,
-                                 variables = ~stype + api99 + api00 + api.stu,
-                                 weight = ~pw, data = apistrat)
 
-# simple random sample (again)
-srs_design_srvyr2 <- apisrs %>% as_survey(ids = 1, fpc = fpc)
+# amostra baleatória simples 
+srs_design_srvyr2 <- apisrs %>% 
+  as_survey(ids = 1, fpc = fpc)
 
 # Manipulação
 strat_design_srvyr <- strat_design_srvyr %>%
@@ -52,29 +52,46 @@ strat_design_srvyr <- strat_design_srvyr %>%
 
 # População
 out <- strat_design_srvyr %>%
-  summarize(api_diff = survey_mean(api_diff, vartype = "ci"))
-
-out
+  summarise(api_diff = survey_mean(api_diff, 
+                                   vartype = "ci"))
 
 # Por grupo
-strat_design_srvyr %>%
+out2 <- strat_design_srvyr %>%
   group_by(stype) %>%
-  summarize(api_increase = survey_total(api_diff >= 0),
-            api_decrease = survey_total(api_diff < 0))
+  summarize(api_increase = survey_mean(api_diff, 
+                                       vartype = "ci"))
+
+
+
+# Por grupo e dentro da variável agrupada
+out3 <- strat_design_srvyr %>%
+  group_by(stype) %>%
+  summarise(api_increase = survey_total(api_diff >= 0,
+                                        vartype="cv"),
+            api_decrease = survey_total(api_diff < 0,
+                                        vartype="ci"))
 
 ## De volta ao exemplo
 strat_design <- apistrat %>%
-  as_survey_design(strata = stype, fpc = fpc, weight  = pw)
+  as_survey(strata = stype, 
+            fpc = fpc, 
+            weight  = pw)
 
-out <- strat_design %>%
-  mutate(hs_grad_pct = cut(hsg, c(0, 20, 100), include.lowest = TRUE,
+out4 <- strat_design %>%
+  mutate(hs_grad_pct = cut(hsg, c(0, 20, 100), 
+                           include.lowest = TRUE,
                            labels = c("<20%", "20+%"))) %>%
   group_by(stype, hs_grad_pct) %>%
-  summarize(api_diff = survey_mean(api00 - api99, vartype = "ci"),
-            n = unweighted(n()))
+  summarize(api_diff = survey_mean(api00 - api99, 
+                                   vartype = "ci"),
+            n = survey_total(vartype = "ci"))
 
-ggplot(data = out, aes(x = stype, y = api_diff, group = hs_grad_pct, fill = hs_grad_pct,
-                       ymax = api_diff_upp, ymin = api_diff_low)) +
+ggplot(data = out4, aes(x = stype, 
+                       y = api_diff, 
+                       group = hs_grad_pct, 
+                       fill = hs_grad_pct,
+                       ymax = api_diff_upp, 
+                       ymin = api_diff_low)) +
   geom_bar(stat = "identity", position = "dodge") +
   geom_errorbar(position = position_dodge(width = 0.9), width = 0.1) +
   geom_text(aes(y = 0, label = n), position = position_dodge(width = 0.9), vjust = -1)
