@@ -46,3 +46,8 @@ resolucao <- srs_design_srvyr %>%
             n=survey_total(vartype = "ci"))
 
 
+## ggplot
+
+srs_design_srvyr %>%
+  data.frame() %>%
+
