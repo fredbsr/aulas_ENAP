@@ -47,7 +47,7 @@ resolucao <- srs_design_srvyr %>%
 library(scales)
 
 # ggplot
-srs_design_srvyr %>%
+p <- srs_design_srvyr %>%
   data.frame() %>%
   ggplot(aes(x=api99/1000,
                  y=api00/1000,
@@ -60,17 +60,16 @@ srs_design_srvyr %>%
   scale_x_continuous(limits = c(0,1),
                      labels = scales::percent)+
   scale_y_continuous(limits = c(0,1),
-                     labels = scales::percent)
+                     labels = scales::percent) +
+  facet_wrap(~nivel) +
+  theme_minimal() 
   
   
-  
-  
-  
+p  
   
 # ggplot
-ggplot(data=srs_design_srvyr %>%
-         data.frame(),
-       aes(x=api99,y=api00)) +
+# Votação mudança composição nota
+# Não foram geradas maiorias, permanecemos como estamos, 50/50
   
   
   
