@@ -1,7 +1,7 @@
 # Exercícios aula 08
 lista.de.pacotes = c("tidyverse","lubridate","janitor",
                      "readxl","stringr","repmis","janitor",
-                     "survey","srvyr") # escreva a lista de pacotes
+                     "survey","srvyr","scales") # escreva a lista de pacotes
 novos.pacotes <- lista.de.pacotes[!(lista.de.pacotes %in%
                                       installed.packages()[,"Package"])]
 if(length(novos.pacotes) > 0) {install.packages(novos.pacotes)}
@@ -44,5 +44,35 @@ resolucao <- srs_design_srvyr %>%
   group_by(nivel) %>%
   summarize(proporcao = survey_mean(vartype = "cv"),
             n=survey_total(vartype = "ci"))
+library(scales)
+
+# ggplot
+srs_design_srvyr %>%
+  data.frame() %>%
+  ggplot(aes(x=api99/1000,
+                 y=api00/1000,
+                 color=nivel,
+                 shape=paste(nivel,"-",stype),
+             group=nivel)) +
+  geom_point() +
+  geom_smooth(method="loess",se=F) +
+  scale_color_manual(values = c("#ff0000","aquamarine4")) +
+  scale_x_continuous(limits = c(0,1),
+                     labels = scales::percent)+
+  scale_y_continuous(limits = c(0,1),
+                     labels = scales::percent)
+  
+  
+  
+  
+  
+  
+# ggplot
+ggplot(data=srs_design_srvyr %>%
+         data.frame(),
+       aes(x=api99,y=api00)) +
+  
+  
+  
 
 
