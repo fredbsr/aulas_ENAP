@@ -1,6 +1,20 @@
 ## Simulado
 
 ## Parte 1 ----
+# 1. Carregue o arquivo `decisoes.rds` em um objeto chamado `decisoes`.
+
+
+# 2. Separe a coluna `classe_assunto` em duas colunas, uma contendo a `classe` 
+# e outra contendo o `assunto`
+
+
+# 3. Elabore um data.frame em que as linhas sejam o assunto, as colunas sejam os anos e os valores 
+# sejam as quantidades de decisões 
+# Dica: agrupar por assunto e ano e fazer o spread
+
+
+
+## Parte 2 ----
 
 # 1. Caregue os pacotes "tidyverse", "survey" e "srvyr"
 
@@ -39,17 +53,3 @@
 # utilize as estimativas intervalares para construir barras com o intervalo de confiança
 
 
-## Parte 2 ----
-# 1. Carregue o arquivo `decisoes.rds` em um objeto chamado `decisoes`.
-
-# 2. Separe a coluna `classe_assunto` em duas colunas, uma contendo a `classe` 
-# e outra contendo o `assunto`
-
-# 3. Elabore um data.frame em que as linhas sejam o assunto, as colunas sejam os anos e os valores 
-# sejam as quantidades de decisões
-
-# 4. Faça um gráfico de linhas com a quantidade de decisões  ano em cada classe
-# Dicas: agrupe os dados por classe e por ano da decisão
-# use ano no eixo x 
-# use quantidade de decisões no eixo y
-# use uma cor por classe

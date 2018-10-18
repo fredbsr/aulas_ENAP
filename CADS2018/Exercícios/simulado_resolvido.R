@@ -1,5 +1,27 @@
 ## Simulado
 
+## Parte 1 ----
+
+# 1. Carregue o arquivo `decisoes.rds` em um objeto chamado `decisoes`.
+decisoes <- read_rds("CADS2018/Exercícios/dados/decisoes.rds")
+
+# 2. Separe a coluna `classe_assunto` em duas colunas, uma contendo a `classe` 
+# e outra contendo o `assunto`
+decisoes <- decisoes %>%
+  separate(classe_assunto, 
+           c('classe', 'assunto'), 
+           sep = ' / ', 
+           extra = 'merge', 
+           fill = 'right') 
+
+# 3. Elabore um data.frame em que as linhas sejam o assunto, as colunas sejam os anos e os valores 
+# sejam as quantidades de decisões 
+# Dica: agrupar por assunto e ano e fazer o spread
+resultado <- decisoes %>%
+  group_by() 
+
+
+## Parte 2 ----
 # 1. Caregue os pacotes "tidyverse", "survey" e "srvyr"
 lista.de.pacotes = c("tidyverse","lubridate","janitor","readxl","stringr","repmis","survey","srvyr") # escreva a lista de pacotes
 novos.pacotes <- lista.de.pacotes[!(lista.de.pacotes %in%
@@ -53,3 +75,4 @@ amostra_expandida %>%
              ymax = api_diff_upp, ymin = api_diff_low)) +
   geom_bar(stat = "identity",alpha=0.6) +
   geom_errorbar(width = 0,size=3) 
+
