@@ -16,10 +16,12 @@ Esta é uma apresentação em Markdown <http://rmarkdown.rstudio.com>.
 Quando você clica em **Knit** é gerado um documento que inclui tanto o conteúdo quanto as saídas do R nos chunks.
 
 ## Slide com tópicos
-
+- tópico x
 - tópico 1
 - tópico 2
 - tópico 3
+
+Teste
 
 ## Slide com uma saída do R 
 
