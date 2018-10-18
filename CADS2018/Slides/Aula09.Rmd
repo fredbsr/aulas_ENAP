@@ -43,19 +43,21 @@ knitr::opts_knit$set(root.dir = "/Volumes/Macintosh HD/OneDrive/ENAP/aulas_ENAP"
 
 ## Exercício
 
-- Carregue os dados de exemplo do pacote survey `data(api)`, use o data.frame `apisrs` e expanda a amostra usando apenas variável (coluna) "pw", contendo o peso amostral `as_survey(weight=pw)`
+- Carregue os dados de exemplo do pacote survey `data(api)`, use o data.frame `apisrs` 
 
-- Usando a variável `stype` crie uma nova variável indicando se a escola é de nível fundamental (categorias **E** e **M** de `stype`)  ou de nível médio (categoria *H* de `stype`). Dica: use `mutate`e `cas_when`.
+- Crie o objeto tbl_svy `amostra_expandida` expandindo a amostra aleatória simples usando apenas a variável (coluna) "pw", contendo o peso amostral. Dica: execute `as_survey(weight=pw)`. 
 
-- 
+- Usando a variável `stype` crie uma nova variável indicando se a escola é de nível fundamental (categorias **E** e **M** de `stype`)  ou de nível médio (categoria *H* de `stype`). Dica: use `mutate`e `case_when`.
+
+- Faça um gráfico de barras comparando a variação média das notas de 1999 (`api99`) e 2000 (`api00`) por nível e utilize as estimativas intervalares. Dica: olhe o código da aula 07, utilize `geom_errorbar` para a estimativa intervalar.
 
 
 ## Resolução
 ```{r,eval=F}
 data(api)
 
-srs_design_srvyr <- apisrs %>% 
-  as_survey(fpc = fpc) %>%
+amostra_expandida <- apisrs %>% 
+  as_survey(weight = pw) %>%
   mutate(nivel=case_when(
     stype=="E"~"Fundamental",
     stype=="M"~"Fundamental",
@@ -64,27 +66,33 @@ srs_design_srvyr <- apisrs %>%
 
 ```
 
-## 
+
+##
+
 ```{r,eval=F}
 
-resolucao <- srs_design_srvyr %>%
+out <- amostra_expandida %>%
   group_by(nivel) %>%
-  summarize(proporcao = survey_mean(vartype = "cv"),
-            n=survey_total(vartype = "ci"))
+  summarise(api_diff = survey_mean(api00 - api99, vartype = "ci"))
+
+```
+
+
+## 
+
+```{r,eval=F}
+
+out %>% 
+  ggplot(aes(x = nivel, y = api_diff, fill = nivel,color=nivel,
+                       ymax = api_diff_upp, ymin = api_diff_low)) +
+  geom_bar(stat = "identity",alpha=0.6) +
+  geom_errorbar(width = 0,size=3) 
 
 ```
 
 
 
-# Rmarkdown
-
-## Princípios
-
-- O que você quer mostrar? <https://i1.wp.com/www.tatvic.com/blog/wp-content/uploads/2016/12/Pic_2.png>
-
-- Elementos que podem **destacar** ou **confundir** o que você quer mostrar.
-
- -- Exemplo Codeplan
+# ioslides no Rmarkdown
 
 ## Trabalhando com slides no RMarkdown
 
@@ -100,11 +108,18 @@ File ==> New file ==> R Markdonw ==> Presentation
 
 - Opções e detalhes do ioslides <https://rmarkdown.rstudio.com/ioslides_presentation_format#overview>
 
-- Mais fontes <https://bookdown.org/yihui/rmarkdown/ioslides-presentation.html>
+- Mais referências <https://bookdown.org/yihui/rmarkdown/ioslides-presentation.html>
 
 - Montando o arquivo `ìndex.rmd`
 
 
 ## gh-pages
 
+- novo "branch"
+
+- nome `gh-pages`
+
+- arquivo `ìndex.html` precisa estar na raiz
+
+- a cada alteração de `ìndex.rmd` e `ìndex.html`, merge de master para gh-pages
 
