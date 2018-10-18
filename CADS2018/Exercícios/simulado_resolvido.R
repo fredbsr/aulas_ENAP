@@ -2,6 +2,10 @@
 
 ## Parte 1 ----
 
+# Carregue o tidyverse e o lubridate
+library(tidyverse)
+library(lubridate)
+
 # 1. Carregue o arquivo `decisoes.rds` em um objeto chamado `decisoes`.
 decisoes <- read_rds("CADS2018/Exercícios/dados/decisoes.rds")
 
@@ -16,9 +20,16 @@ decisoes <- decisoes %>%
 
 # 3. Elabore um data.frame em que as linhas sejam o assunto, as colunas sejam os anos e os valores 
 # sejam as quantidades de decisões 
-# Dica: agrupar por assunto e ano e fazer o spread
+# Dica 1: crie uma variável `ano` e exclua os casos em que não há informação sobre data da decisão
+# Dica 2: agrupar por assunto e ano e fazer o spread
+
 resultado <- decisoes %>%
-  group_by() 
+  mutate(ano=lubridate::year(dmy(data_decisao))) %>%
+  dplyr::filter(!is.na(ano)) %>%
+  group_by(assunto,ano) %>%
+  summarise(n=n()) %>%
+  spread(ano,n,fill = 0)
+  
 
 
 ## Parte 2 ----
@@ -69,9 +80,9 @@ amostra_expandida <- amostra %>%
 # das notas de 1999 (`api99`) e 2000 (`api00`) por tipo de escola (`stype`) 
 # utilize as estimativas intervalares para construir barras com o intervalo de confiança
 amostra_expandida %>%
-  group_by(nivel) %>%
+  group_by(stype) %>%
   summarise(api_diff = survey_mean(api00 - api99, vartype = "ci")) %>%
-  ggplot(aes(x = stype, y = api_diff, fill = nivel,color=stype,
+  ggplot(aes(x = stype, y = api_diff, fill = stype,color=stype,
              ymax = api_diff_upp, ymin = api_diff_low)) +
   geom_bar(stat = "identity",alpha=0.6) +
   geom_errorbar(width = 0,size=3) 

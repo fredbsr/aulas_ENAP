@@ -1,6 +1,9 @@
 ## Simulado
 
 ## Parte 1 ----
+
+# Carregue o tidyverse e o lubridate
+
 # 1. Carregue o arquivo `decisoes.rds` em um objeto chamado `decisoes`.
 
 
@@ -10,7 +13,8 @@
 
 # 3. Elabore um data.frame em que as linhas sejam o assunto, as colunas sejam os anos e os valores 
 # sejam as quantidades de decisões 
-# Dica: agrupar por assunto e ano e fazer o spread
+# Dica 1: crie uma variável `ano` e exclua os casos em que não há informação sobre data da decisão
+# Dica 2: agrupar por assunto e ano e fazer o spread
 
 
 
