@@ -17,9 +17,9 @@ Quando você clica em **Knit** é gerado um documento que inclui tanto o conteú
 
 ## Slide com tópicos
 
-- Bullet 1
-- Bullet 2
-- Bullet 3
+- tópico 1
+- tópico 2
+- tópico 3
 
 ## Slide com uma saída do R 
 
