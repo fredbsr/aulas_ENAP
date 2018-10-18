@@ -121,7 +121,9 @@ File ==> New file ==> R Markdonw ==> Presentation
 
 - arquivo `ìndex.html` precisa estar na raiz
 
-- a cada alteração de `ìndex.rmd` e `ìndex.html`, merge de master para gh-pages OU SIMPLESMENTE apague o branch 
+- a cada alteração de `ìndex.rmd` e `ìndex.html`, merge de master para gh-pages OU SIMPLESMENTE apague o branch e recrie o gh-pages
+
+- Suestão: só crie o branch gh-pages quando concluir seu trabalho e fizer o  
 
 - Seu site estará no endereço ==> nome_de_usuario.github.io/nome_do_repositorio/
 
