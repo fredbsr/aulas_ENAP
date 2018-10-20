@@ -1,0 +1,1567 @@
+---
+title: "Coleta e Análise de Dados Secundários"
+author: "Frederico Bertholini"
+subtitle: Apresentação de slides com todas as aulas
+output:
+  ioslides_presentation: 
+    widescreen: yes
+  beamer_presentation: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T)
+
+lista.de.pacotes = c("tidyverse","lubridate","janitor","readxl","stringr","repmis","survey","srvyr") # escreva a lista de pacotes
+novos.pacotes <- lista.de.pacotes[!(lista.de.pacotes %in%
+                                      installed.packages()[,"Package"])]
+if(length(novos.pacotes) > 0) {install.packages(novos.pacotes)}
+lapply(lista.de.pacotes, require, character.only=T)
+rm(lista.de.pacotes,novos.pacotes)
+gc()
+
+knitr::opts_knit$set(root.dir = "/Volumes/Macintosh HD/OneDrive/ENAP/aulas_ENAP")
+
+
+```
+
+
+# Introdução
+
+
+## O que são dados secundários?
+
+- “No sentido mais amplo, análise de dados coletados por outra pessoa”
+(Boslaugh, 2007)
+
+- Uso de dados para responder a uma pergunta diversa da qual originou sua coleta (Vartanian, 2010)
+
+- Em contraste com a análise de dados primários em que o mesmo indivíduo/equipe de pesquisadores desenha, coleta e analisa os dados
+
+## O que são dados secundários?
+
+Muitas fontes
+
+- Grandes conjuntos de dados financiados pelo governo
+
+- Registros administrativo
+
+- Suplementos de periódicos
+
+- websites dos autores
+
+- Etc.
+
+
+## O que são dados secundários?
+
+- Disponível para um número aparentemente ilimitado de temas
+
+- Quantitativo ou qualitativo
+
+- Uso restrito ou público
+
+- Direto ou observação indireta
+
+
+
+## Fontes essenciais de dados secundários
+
+- Portal de dados do Governo Federal <http://dados.gov.br/dataset?groups=governo-politica>
+
+- IBGE <https://www.ibge.gov.br/estatisticas-novoportal/downloads-estatisticas.html>
+
+- IPEADATA <http://www.ipeadata.gov.br/Default.aspx>
+
+- DATASUS <http://www2.datasus.gov.br/DATASUS/index.php?area=0205&id=6936>
+
+- INEP <http://portal.inep.gov.br/web/guest/dados>
+
+
+## Internacionais (US)
+
+- Inter-University Consortium for Political and Social Research <http://www.icpsr.umich.edu/icpsrweb/ICPSR/access/index.jsp>
+
+- Data.gov <http://www.data.gov>
+
+- National Center for Education Statistics <http://nces.ed.gov>
+
+- U.S. Census Bureau <http://www.census.gov>
+
+- Simple Online Data Archive for Population Studies (SodaPop)  <http://sodapop.pop.psu.edu/data-collections>
+
+
+## Vantagens de dados secundários
+
+- Desenho do estudo e coleta de dados já concluídos
+
+- Economiza tempo e dinheiro
+
+- Acesso a dados internacionais e históricos que
+caso contrário, levariam vários anos e milhões de reais para coletar
+
+
+## Vantagens de dados secundários
+
+- Ideal para uso em exemplos de sala de aula, projetos semestrais, mestrados
+teses, dissertações
+
+- Normalmente os dados têm qualidade superior
+
+- Estudos financiados pelo governo geralmente envolvem amostras maiores
+que são mais representativos da população-alvo (maior
+validade externa)
+
+
+## Vantagens de dados secundários
+
+- A sobreamostra de grupos/comportamentos de baixa prevalência permite
+maior precisão estatística
+
+- Os conjuntos de dados geralmente têm amplitude considerável (milhares de variáveis)
+
+
+## Desvantagens de dados secundários
+
+Desenho do estudo e coleta de dados já concluídos
+
+- Os dados podem não facilitar uma questão de pesquisa específica
+
+- Informações sobre desenho do estudo e procedimentos de coleta de dados
+pode ser escassas
+
+## Desvantagens de dados secundários
+
+- Os dados podem ter falta de profundidade (quanto maior a largura, mais difícil
+para medir qualquer construção em profundidade)
+
+- Certos campos ou departamentos (por exemplo, programas experimentais) podem
+ver menor valor na análise de dados secundários
+
+- Pode exigir conhecimento de estatística/métodos de pesquisa que não são
+geralmente fornecidos por cursos de graduação ou pós-graduação
+
+
+## Entenda seus dados
+
+Familiarize-se com o estudo e os dados originais!
+
+- Leia todos os manuais 
+
+- Para quem os resultados são generalizáveis?
+
+
+## Entenda seus dados
+
+- Como os dados faltantes (perdidos) são tratados?
+
+- Quais são os pesos de análise apropriados?
+
+- Quais variáveis compostas estão disponíveis e como elas são
+construídas?
+
+
+## Entenda seus dados
+
+- Protocolos de coleta
+
+- Questionários
+
+- Atualizações
+
+
+## Preparo de dados
+
+- Documente TUDO!
+
+1. Transfira ou leia diretamente
+
+2. Lide com missing data
+
+3. Recodifique variáveis
+
+4. Crie novas variáveis
+
+
+## Análise de dados
+
+- Com base na sua questão de pesquisa, identificar análise estatística apropriada
+
+- Selecione o pacote de software que implementará a análise e viabilizará a
+amostragem complexa
+
+- Examine estatísticas descritivas não ponderadas para identificar erros de codificação e determinar a adequação do tamanho da amostra
+
+
+## Análise de dados
+
+- Identifique pesos
+
+- Identifique método de estimação de variância (e variáveis correspondentes)
+
+- Realize análises de diagnóstico (identificar outliers, não normalidade, etc.)
+
+- Realize análises preliminares e interprete os resultados!
+
+
+
+# O Universo tidyverse
+
+
+## Manifesto tidyverse
+
+
+O tidyverse, também chamado por muitos de hadleyverse, é um conjunto de pacotes que, por compartilharem esses princípios do manifesto tidy, podem ser utilizados naturalmente em conjunto. Pode-se dizer que existe o R antes do tidyverse e o R depois do tidyverse. 
+
+Os princípios fundamentais do tidyverse são:
+
+- Reutilizar estruturas de dados existentes.
+
+- Organizar funções simples usando o pipe.
+
+- Aderir à programação funcional.
+
+- Projetado para ser usado por seres humanos.
+
+
+## Manifesto tidy
+
+- Tidy Tools Manifesto <https://cran.r-project.org/web/packages/tidyverse/vignettes/manifesto.html>
+
+- Tidy data vignette <https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html>
+
+- Tidy Data paper <http://vita.had.co.nz/papers/tidy-data.pdf>
+
+- Conjunto de pacotes <https://www.tidyverse.org/packages/>
+
+
+## Usando o pipe - O operador %>%
+
+O operador %>% (pipe) foi uma das grandes revoluções recentes do R, tornando a leitura de códigos mais lógica, fácil e compreensível. 
+
+```{r,message=F,warning=F}
+library(tidyverse)
+library(magrittr)
+```
+
+
+## Ideia
+
+A ideia do operador %>% (pipe) é bem simples: usar o valor resultante da expressão do lado esquerdo como primeiro argumento da função do lado direito.
+
+- As duas linhas abaixo são equivalentes.
+
+```{r,eval=F}
+f(x, y)
+```
+
+```{r,eval=F}
+x %>% f(y)
+```
+
+## E se aumentarmos o código?
+
+Vamos calcular a raiz quadrada da soma dos valores de 1 a 4. `r x <- c(1, 2, 3, 4)`
+
+Primeiro, sem o pipe.
+```{r}
+sqrt(sum(x))
+```
+
+
+Agora com o pipe.
+```{r}
+x %>% 
+  sum %>% 
+  sqrt
+```
+
+
+## E se realmente tivermos muitas funções aninhadas?
+
+A utilização do pipe transforma um código confuso e difícil de ser lido em algo *simples e intuitivo*.
+
+
+## Receita de bolo - sem pipe
+
+Tente entender o que é preciso fazer. 
+
+```{r, eval=FALSE}
+esfrie(
+  asse(
+    coloque(
+      bata(
+        acrescente(
+          recipiente(rep("farinha", 2), "água", 
+                     "fermento", "leite", "óleo"), 
+          "farinha", até = "macio"), 
+        duração = "3min"), 
+      lugar = "forma", tipo = "grande", 
+      untada = TRUE), duração = "50min"), 
+  "geladeira", "20min")
+```
+
+## Receita de bolo - com pipe
+
+Desistiu? Agora veja como fica escrevendo com o `%>%`:
+
+```{r, eval=FALSE}
+
+recipiente(rep("farinha", 2), "água", "fermento", "leite", "óleo") %>%
+  acrescente("farinha", até = "macio") %>%
+  bata(duração = "3min") %>%
+  coloque(lugar = "forma", tipo = "grande", untada = TRUE) %>%
+  asse(duração = "50min") %>%
+  esfrie("geladeira", "20min")
+
+```
+
+
+# Exercícios pipe
+
+## Exercício
+
+1. Reescreva a expressão abaixo utilizando o %>%.
+
+```{r, eval=F}
+round(mean(divide_by(sum(1:10),3)),digits = 1)
+```
+
+## Resolução
+
+## Exercício
+
+```{r, eval=F}
+2 %>% 
+  add(2) %>% 
+  c(6, NA) %>% 
+  mean(na.rm = T) %>% 
+  equals(5)
+```
+
+
+## Resolução
+
+# Importação no tidyverse
+
+## Importação com `readr`, `readxl`, `haven` e `DBI`
+
+
+No tidyverse, geralmente
+
+- Funções `read_<formato>` servem para ler um arquivo no formato `<formato>`
+- Funções `write_<formato>` servem para escrever num arquivo com o formato `<formato>`
+
+
+## Arquivos de texto
+
+- `csv`, `tsv`, `txt`, ...
+
+- Para esses aqui, usar o pacote `readr`
+- Você também pode experimentar o `data.table::fread`
+
+
+## 'readr' para textos
+
+Exemplo:
+
+```{r, eval=F}
+read_csv("data/import/mtcars.csv")
+
+data.table::fread("data/import/mtcars.csv")
+```
+
+## Arquivos binários
+
+- `.RData`, `.rds`, `.feather`, `.fst`
+- `.dta` (Stata), `.sas7bdat` (SAS), `.sav` (SPSS)
+
+- Ler com `readr`, `haven`, `feather`, `fst`.
+
+Exemplo:
+
+```{r, eval=F}
+read_rds("data/import/mtcars.rds")
+```
+
+## Bancos de dados
+
+- `MySQL`, `SQL Server`, `PostgreSQL`, `SQLite`, ...
+- `Spark`, `MongoDB`, `Hive`, ...
+
+- Utilizar pacotes `DBI` e `odbc`
+
+
+
+
+# Pacotes `dplyr` e `tidyr`
+
+## Conjunto de dados
+
+Vamos trabalhar com a base `decisoes`, que contém decisões do Tribunal de Justiça de São Paulo
+
+```{r}
+decisoes <- read_rds("CADS2018/Exercícios/dados/decisoes.rds")
+glimpse(decisoes)
+```
+
+
+## Características do `dplyr`
+
+
+- A utilização é facilitada com o emprego do operador `%>%`
+
+
+- No primeiro argumento colocamos o `data.frame` ou o `tibble`, e nos outros argumentos colocamos o que queremos fazer.
+
+
+## As cinco funções principais do `dplyr`
+
+- `select`: selecionar colunas
+
+- `filter`: filtrar linhas
+
+- `mutate`: criar colunas
+
+- `summarise`: sumarizar colunas
+
+- `arrange`: ordenar linhas
+
+# select
+
+## `select`
+
+- Utilizar `starts_with(x)`, `contains(x)`, `matches(x)`, `one_of(x)`, etc.
+- Possível colocar nomes, índices, e intervalos de variáveis com `:`.
+
+## Em ação
+
+```{r}
+decisoes %>% 
+  select(id_decisao, n_processo, municipio, juiz)
+```
+
+## Em ação
+
+```{r}
+decisoes %>% 
+  select(classe_assunto:id_decisao, juiz)
+```
+
+## Em ação
+
+```{r}
+decisoes %>% 
+  select(id_decisao, starts_with('data_'))
+```
+
+
+
+## Exercício 
+- selecione as colunas que acabam com "cisao".
+
+## Resolução
+```{r}
+decisoes %>% 
+  select(ends_with("cisao"))
+```
+
+## Exercício 
+- tire as colunas de texto = 'txt_decisao' e classe/assunto = 'classe_assunto'.
+    - Dica: veja os exemplos de `?select` em `Drop variables ...`
+
+## Resolução
+```{r}
+decisoes %>% 
+  select(-classe_assunto, -txt_decisao)
+```
+
+# filter
+
+## `filter`
+
+- Use `,` ou `&` para "e" e `|` para "ou".
+- Condições separadas por vírgulas é o mesmo que separar por `&`.
+
+## `filter` em ação
+
+```{r}
+decisoes %>% 
+  select(n_processo, id_decisao, municipio, juiz) %>% 
+  filter(municipio == 'São Paulo')
+```
+
+## Dica: usar `%in%`
+```{r, echo=T,warning=F,message=F}
+library(lubridate) # para trabalhar com as datas
+#`day(dmy(data_decisao))` pega o dia da decisão. 
+```
+
+```{r}
+decisoes %>% 
+  select(id_decisao, municipio, data_decisao, juiz) %>% 
+  # municipio igual a campinas ou jaú, OU dia da decisão maior ou igual a 25
+  filter(municipio %in% c('Campinas', 'Jaú') | day(dmy(data_decisao)) >= 25)
+```
+
+
+
+## Mais ação
+
+```{r, eval=T}
+decisoes %>% 
+  select(juiz) %>% 
+  # filtra juízes que têm `Z` ou `z` no nome
+  filter(str_detect(juiz, regex("z", ignore_case = TRUE))) %>% 
+  # conta e ordena os juizes em ordem decrescente
+  count(juiz, sort = TRUE) %>%
+  head(5)
+```
+
+## **Obs** 
+
+A função `str_detect()` retorna `TRUE` se um elemento do vetor de textos é compatível com uma *expressão regular*. Estudaremos o pacote `stringr` e as funções `str_*` em outra aula.
+
+
+## Exercício 
+
+- filtre apenas casos em que `id_decisao` não é `NA`
+
+## Resolução
+
+```{r}
+decisoes %>% 
+  filter(is.na(id_decisao))
+```
+
+
+## Exercício
+
+- filtre todas as decisões de 2018.
+
+  -- Dica: função `lubridate::year()`
+
+## Resolução
+
+```{r}
+decisoes %>% 
+  filter(year(dmy(data_decisao)) == 2018)
+```
+
+# mutate
+
+## `mutate`
+
+- Aceita várias novas colunas iterativamente.
+
+- Novas variáveis devem ter o mesmo `length` que o `nrow` do bd original ou `1`.
+
+## `mutate` em ação
+```{r}
+decisoes %>% 
+  select(n_processo, data_decisao, data_registro) %>% 
+  mutate(tempo = dmy(data_registro) - dmy(data_decisao))
+```
+
+## Exercício 
+
+- Crie uma coluna binária `drogas` que vale `TRUE` se no texto da decisão algo é falado de drogas e `FALSE` caso contrário. 
+ -- Dica: `str_detect`
+
+Obs.: Considere tanto a palavra 'droga' como seus sinônimos, ou algum exemplo de droga e retire os casos em que `txt_decisao` é vazio
+
+## Resolução 
+
+```{r }
+decisoes %>% 
+  filter(!is.na(txt_decisao)) %>% 
+  mutate(txt_decisao = tolower(txt_decisao),
+         droga = str_detect(txt_decisao,
+    "droga|entorpecente|psicotr[óo]pico|maconha|haxixe|coca[íi]na")) %>%
+  dplyr::select(n_processo,droga) 
+  
+```
+
+# summarise
+
+## `summarise`
+
+- Retorna um vetor de tamanho `1` a partir de uma operação com as variáveis (aplicação de uma função).
+- Geralmente é utilizado em conjunto com `group_by()`.
+- Algumas funções importantes: `n()`, `n_distinct()`.
+
+## Em ação
+
+```{r,eval=F}
+decisoes %>% 
+  select(n_processo, municipio, data_decisao) %>%
+  #        pega ano da decisão
+  mutate(ano_julgamento = year(dmy(data_decisao)),
+         # pega o ano do processo 0057003-20.2017.8.26.0000" -> "2017"
+         ano_proc = str_sub(n_processo, 12, 15),
+         # transforma o ano em inteiro
+         ano_proc = as.numeric(ano_proc),
+         # calcula o tempo em anos
+         tempo_anos = ano_julgamento - ano_proc) %>% 
+  group_by(municipio) %>% 
+  summarise(n = n(),
+            media_anos = mean(tempo_anos),
+            min_anos = min(tempo_anos),
+            max_anos = max(tempo_anos)) 
+```
+
+## Resultado
+
+
+```{r,echo=F}
+decisoes %>% 
+  select(n_processo, municipio, data_decisao) %>%
+  #        pega ano da decisão
+  mutate(ano_julgamento = year(dmy(data_decisao)),
+         # pega o ano do processo 0057003-20.2017.8.26.0000" -> "2017"
+         ano_proc = str_sub(n_processo, 12, 15),
+         # transforma o ano em inteiro
+         ano_proc = as.numeric(ano_proc),
+         # calcula o tempo em anos
+         tempo_anos = ano_julgamento - ano_proc) %>% 
+  group_by(municipio) %>% 
+  summarise(n = n(),
+            media_anos = mean(tempo_anos),
+            min_anos = min(tempo_anos),
+            max_anos = max(tempo_anos)) 
+```
+
+
+## usando `count()`
+
+A função `count()`, simplifica um `group_by %>% summarise %>% ungroup`:
+
+```{r}
+decisoes %>% 
+  count(juiz, sort = TRUE) %>% 
+  mutate(prop = n / sum(n), 
+         prop = scales::percent(prop))
+```
+
+
+## + fácil ainda
+
+mas sem formato %
+
+```{r}
+decisoes %>% 
+  count(juiz, sort = TRUE) %>% 
+  mutate(prop = prop.table(n))
+```
+
+
+# arrange
+
+## `arrange`
+
+- Simplesmente ordena de acordo com as opções.
+
+- Utilizar `desc()` para ordem decrescente ou o sinal de menos (`-`).
+
+## Exercício 
+
+- Quem são os cinco relatores mais prolixos?
+
+ -- Dica: use `str_length()`
+ -- Lembre-se da função `head()`
+
+## Resolução
+
+```{r}
+decisoes %>% 
+  filter(!is.na(txt_decisao)) %>% 
+  mutate(tamanho = str_length(txt_decisao)) %>% 
+  group_by(juiz) %>% 
+  summarise(n = n(), 
+            tamanho_mediana = median(tamanho)) %>% 
+  filter(n >= 10) %>% 
+  arrange(desc(tamanho_mediana)) %>%
+  head()
+
+
+```
+
+
+
+
+## Vamos versionar nossos projetos a partir de agora
+
+- Versionamento -> <https://www.curso-r.com/blog/2017-07-17-rstudio-e-github/>
+
+- Instruções adicionais de instalação <http://r-bio.github.io/git-installation/>
+
+## Exercitando o que sabemos até aqui
+
+- Carregue o arquivo `decisoes.rds` em um objeto chamado `decisoes`.
+
+- Crie um objeto contendo o tempo médio entre decisão e registro por juiz, apenas para processos relacionados a drogas nos municípios de Campinas ou Limeira.
+
+ -- Obs.: a nova "singularidade" da base de dados será o `juiz`. Na base original, a singularidade era o `processo`
+
+- Salve o objeto resultante em um arquivo chamado `juizes_drogas_CL.rds`.
+
+
+## Resolução
+
+- Carregando
+```{r,echo=T}
+#setwd()
+decisoes <- read_rds("CADS2018/Exercícios/dados/decisoes.rds")
+
+```
+
+## Resolução
+
+- tempo médio entre decisão e registro, por juiz, para processos relacionados a drogas nos municípios de Campinas ou Limeira
+```{r}
+juizes_drogas_CL <- decisoes %>% 
+  # selecionando as colunas utilizadas (só pra usar o select)
+  select(juiz,municipio,txt_decisao,data_registro,data_decisao) %>%
+  # criando variável "droga" a partir do texto da decisão
+  mutate(txt_decisao = tolower(txt_decisao),
+         droga = str_detect(txt_decisao,
+    "droga|entorpecente|psicotr[óo]pico|maconha|haxixe|coca[íi]na"),
+  # variável tempo, 
+         tempo = dmy(data_registro) - dmy(data_decisao)) %>% 
+  filter(droga ==TRUE,municipio %in% c("Campinas","Limeira")) %>%
+  group_by(juiz) %>%
+  summarise(tempo_medio = mean(tempo,na.rm=T))
+  
+```
+
+## Resolução
+
+- Salvando o objeto `juizes_drogas_CL.rds`
+```{r,eval=F}
+write_rds(juizes_drogas_CL,"juizes_drogas_CL.rds")
+```
+
+
+
+## Exercitando o versionamento
+
+- Faça commit e push do script e do arquivo `.rds`
+
+# tydyr
+
+## A partir dessa aula, sempre versione
+
+- Baixe os dados da pasta exercícios (ou faça pull do seu GitHub)
+
+- Configure o GitHub na sua máquina 
+
+ -- Versionamento -> <https://www.curso-r.com/blog/2017-07-17-rstudio-e-github/>
+
+ -- Instruções adicionais de instalação <http://r-bio.github.io/git-installation/>
+
+- Rode todos os pacotes (usando o macetinho) --> pode baixar o script do exercício 6, que já tem tudo. 
+
+- Repositório no GitHub <https://github.com/fredbsr/aulas_ENAP/tree/master/CADS2018>
+
+
+## Alterando o formato de dados
+
+Até agora, estudamos os principais ferramentas de transformação de dados do `dplyr`. Agora vamos aumentar nosso toolkit com `tidyr`
+
+
+- Vamos utilizar uma nova base de dados, que completa a de decisões.
+
+```{r echo=TRUE}
+processos <- read_rds("CADS2018/Exercícios/dados/processos_nested.rds")
+```
+
+
+## Fomato tidy
+
+- Hadley Wickham <http://r4ds.had.co.nz/tidy-data.html>
+
+## Funções do pacote
+
+
+- Enquanto o `dplyr` faz recortes na base (com `filter()`e `select()`) e adições simples (`mutate()`, `summarise()`), o `tidyr` mexe no **formato** da tabela (`gather()`, `spread()`) e faz modificações menos triviais.
+
+
+- As funções do `tidyr` geralmente vêm em pares com seus inversos:
+    - `gather()` e `spread()`,
+    - `nest()` e `unnest()`,
+    - `separate()` e `unite()`
+
+
+## Onde estamos
+
+
+<http://r4ds.had.co.nz/wrangle-intro.html>
+
+```{r, out.width="90%", echo=FALSE, fig.align='center',eval=F}
+knitr::include_graphics("CADS2018/Slides/imgs/wrangle.png")
+```
+
+
+## `gather()` 
+
+- `gather()` empilha o banco de dados
+
+
+```{r, warning=FALSE, message=FALSE}
+decisoes %>% 
+  filter(!is.na(id_decisao)) %>% 
+  select(id_decisao:data_registro) %>% 
+  # 1. nome da coluna que vai guardar os nomes de colunas empilhadas
+  # 2. nome da coluna que vai guardar os valores das colunas
+  # 3. seleção das colunas a serem empilhadas
+  gather(key="variavel", value="valor", -id_decisao) %>% 
+  arrange(id_decisao)
+```
+
+## 
+
+## `spread()`
+
+- `spread()` espalha uma variável nas colunas e preenche com outra variável
+
+- É essencialmente a função inversa de `gather`
+
+```{r}
+decisoes %>% 
+  filter(!is.na(id_decisao)) %>% 
+  select(id_decisao:data_registro) %>% 
+  gather(key, value, -id_decisao) %>% 
+  # 1. coluna a ser espalhada
+  # 2. valores da coluna
+  spread(key, value)
+```
+
+
+## Exercício
+
+- Qual juiz julga a maior proporção de processos que tratam de drogas
+
+ -- Dica: construa um `data.frame` contendo as colunas juiz, n_processos_drogas, n_processos_n_drogas e total_processos, remodelando os dados para haver um juiz por linha e utilizando `spread()`
+    
+## Resolução
+
+```{r,echo=F}
+decisoes %>% 
+  filter(!is.na(txt_decisao)) %>%
+  mutate(txt_decisao = tolower(txt_decisao),
+         droga = str_detect(txt_decisao,
+    "droga|entorpecente|psicotr[óo]pico|maconha|haxixe|coca[íi]na"),
+    droga=case_when(
+      droga==TRUE ~ "droga",
+      droga==FALSE ~ "n_droga"
+    )) %>%
+  group_by(juiz,droga) %>%
+  summarise(n=n()) %>%
+  spread(droga,n,fill = 0) %>%
+  mutate(total=droga+n_droga,
+         proporcao=droga/total)
+  
+  
+```
+
+## Exercício
+
+- Qual quantidade mensal de decisões por juiz?
+
+- Dica: use `data_decisao` `dmy()` e `month()`
+    
+## Resolução
+
+```{r,eval=F}
+decisoes %>% 
+  filter(!is.na(txt_decisao)) %>%
+  mutate(txt_decisao = tolower(txt_decisao),
+         droga = str_detect(txt_decisao,
+    "droga|entorpecente|psicotr[óo]pico|maconha|haxixe|coca[íi]na"),
+    droga=case_when(
+      droga==TRUE ~ "droga",
+      droga==FALSE ~ "n_droga"
+    )) %>%
+  group_by(juiz,droga) %>%
+  summarise(n=n()) %>%
+  spread(droga,n,fill = 0) %>%
+  mutate(total=droga+n_droga,
+         proporcao=droga/total)
+  
+  
+```
+
+
+## Resultado
+
+
+```{r,echo=F}
+decisoes %>% 
+  filter(!is.na(txt_decisao)) %>%
+  mutate(txt_decisao = tolower(txt_decisao),
+         droga = str_detect(txt_decisao,
+    "droga|entorpecente|psicotr[óo]pico|maconha|haxixe|coca[íi]na"),
+    droga=case_when(
+      droga==TRUE ~ "droga",
+      droga==FALSE ~ "n_droga"
+    )) %>%
+  group_by(juiz,droga) %>%
+  summarise(n=n()) %>%
+  spread(droga,n,fill = 0) %>%
+  mutate(total=droga+n_droga,
+         proporcao=droga/total)
+  
+  
+```
+
+
+## Exemplo para o ggplot
+
+
+
+## Unindo e separando colunas
+
+- `unite` junta duas ou mais colunas usando algum separador (`_`, por exemplo).
+- `separate` faz o inverso de `unite`, e uma coluna em várias usando um separador.
+
+## Exemplo de separação de colunas
+
+- Olhe os valores da variável classe_assunto
+
+
+
+## Exemplo de separação de colunas
+
+- Vamos separar a coluna classe_assunto em duas colunas
+
+- coluna classe e coluna assunto
+
+- Existe separador? -> sim, `/`
+
+- Usei count apenas em assunto
+
+## Em ação
+```{r,eval=F}
+decisoes %>% 
+  select(n_processo, classe_assunto) %>% 
+  separate(classe_assunto, c('classe', 'assunto'), sep = ' / ', 
+           extra = 'merge', fill = 'right') %>% 
+  count(assunto, sort = TRUE)
+
+## count é um jeito resumido de usar group_by() %>% summarise(n())
+```
+
+## Em ação
+```{r,echo=F}
+decisoes %>% 
+  select(n_processo, classe_assunto) %>% 
+  separate(classe_assunto, c('classe', 'assunto'), sep = ' / ', 
+           extra = 'merge', fill = 'right') %>% 
+  count(assunto, sort = TRUE)
+
+
+```
+
+
+## List columns: `nest()` e `unnest()`
+
+`nest()` e `unnest()` são operações inversas e servem para tratar dados complexos, como o que temos em `processos`
+
+```{r}
+d_partes <- processos %>% 
+  select(n_processo, partes) %>% 
+  unnest(partes)
+```
+
+## 
+
+As list columns são uma forma condensada de guardar dados que estariam em múltiplas tabelas. Por exemplo, uma alternativa à colocar as `partes` numa list column seria guardar a tabela `d_partes` separadamente.
+
+```{r}
+
+glimpse(d_partes)
+```
+
+
+## Duplicatas
+
+Para retirar duplicatas, utilizar `distinct`. Ele considera apenas a primeira linha em que encontra um padrão para as combinações de variáveis escolhidas e descarta as demais.
+
+```{r echo=TRUE}
+decisoes %>% 
+  distinct(municipio)
+```
+
+## Por coluna
+
+Para manter as demais colunas, use `.keep_all=`:
+
+```{r echo=TRUE}
+decisoes %>%
+  distinct(municipio, camara, 
+           .keep_all = TRUE)
+```
+
+## `janitor::get_dupes()`
+
+Use `janitor::get_dupes()` para averiguar os casos em que há repetição de combinações de colunas.
+
+```{r echo=TRUE}
+decisoes %>% 
+  get_dupes(n_processo)
+```
+
+
+
+
+# Joins
+
+## Dados relacionais
+
+- Hadley Wickham <http://r4ds.had.co.nz/relational-data.html>
+
+## Principais funções 
+
+Para juntar tabelas, usar `inner_join`, `left_join`, `anti_join`, etc. 
+
+## Visualizando
+
+```{r, out.width="90%", echo=FALSE, fig.align='center',eval=F}
+knitr::include_graphics("CADS2018/Slides/imgs/join-venn.png")
+```
+
+
+
+## Exemplo de inner join:
+
+```{r eval=F}
+decisoes %>% 
+  filter(data_registro == "18/01/2018", !is.na(id_decisao)) %>% 
+  select(id_decisao, n_processo) %>% 
+  inner_join(processos, "n_processo")
+```
+
+##
+```{r echo=F}
+decisoes %>% 
+  filter(data_registro == "18/01/2018", !is.na(id_decisao)) %>% 
+  select(id_decisao, n_processo) %>% 
+  inner_join(processos, "n_processo")
+```
+
+
+
+## Exemplo de right join:
+
+
+```{r eval=F}
+decisoes %>% 
+  filter(data_registro == "18/01/2018", !is.na(id_decisao)) %>% 
+  select(id_decisao, n_processo) %>% 
+  right_join(processos, "n_processo")
+```
+
+##
+
+```{r echo=F}
+decisoes %>% 
+  filter(data_registro == "18/01/2018", !is.na(id_decisao)) %>% 
+  select(id_decisao, n_processo) %>% 
+  right_join(processos, "n_processo")
+```
+
+
+
+
+
+## Exercício
+
+- Crie um objeto contendo informações sobre os tamanhos das bancadas dos partidos (arquivo `bancadas.rds`), suas respectivas coligações eleitorais para 2018 (arquivo `coligacoes.xlsx`) e o grau de concordância com a agenda do Gov Temer (arquivo `governismo_temer.xlsx`). 
+
+## Resolução
+
+## Exercício
+
+Com base no objeto criado:
+
+- Crie uma coluna unindo partido e candidato, sem excluir as originais
+
+- Bônus: use `group_by` e `summarise` para identificar 
+
+  -- qual candidato tem a coligação com menor média de concordância e 
+  
+  -- qual candidato tem a coligação com maior soma da proporção total de assentos.
+
+## Resolução
+
+## Função `expand.grid()` pode ser util
+
+```{r,eval=F}
+expand.grid(ano=c(2010:2012),mes=c(1:2))
+```
+
+
+##
+```{r,echo=F}
+expand.grid(ano=c(2010:2012),mes=c(1:2))
+```
+
+
+# Limpeza
+
+## Duplicatas
+
+Para retirar duplicatas, utilizar `distinct`. Ele considera apenas a primeira linha em que encontra um padrão para as combinações de variáveis escolhidas e descarta as demais.
+
+```{r eval=F}
+decisoes %>% 
+  distinct(municipio)
+```
+
+##
+
+```{r echo=F}
+decisoes %>% 
+  distinct(municipio)
+```
+
+
+
+## Por coluna
+
+Para manter as demais colunas, use `.keep_all=`:
+
+```{r eval=F}
+decisoes %>%
+  distinct(municipio, camara, 
+           .keep_all = TRUE)
+```
+
+##
+
+```{r echo=F}
+decisoes %>%
+  distinct(municipio, camara, 
+           .keep_all = TRUE)
+```
+
+
+
+## `janitor::get_dupes()`
+
+Use `janitor::get_dupes()` para averiguar os casos em que há repetição de combinações de colunas.
+
+```{r eval=F}
+decisoes %>% 
+  get_dupes(n_processo)
+```
+
+
+##
+
+```{r echo=F}
+decisoes %>% 
+  get_dupes(n_processo)
+```
+
+## 
+
+- Janitor exemplos <http://sfirke.github.io/janitor/articles/janitor.html>
+
+- Missing e imputação <https://www.analyticsvidhya.com/blog/2016/03/tutorial-powerful-packages-imputing-missing-values/>
+
+- Outliers
+
+- `stringi` e `stringr`
+
+
+
+
+# srvyr
+
+## Referências
+
+- Survey <http://r-survey.r-forge.r-project.org/survey/>
+
+- `srvyr` <https://cran.r-project.org/web/packages/srvyr/vignettes/srvyr-vs-survey.html>
+
+- Dados amostrais complexos ou aletórias simples (apenas peso amostral)
+
+## Desenho amostral
+
+- `as_survey()`
+
+ -- ids
+ 
+ -- strata
+ 
+ -- fpc
+ 
+ -- nest
+ 
+ -- weights
+
+Pronto, agora trabalhe como se estivesse em um *tibble* `tbl_df` normal, que será um `tbl_svy`
+
+
+
+## Este não é um curso de amostragem
+
+- Para maior aprofundamento, leia:
+
+ -- <http://r-survey.r-forge.r-project.org/svybook/>
+ 
+ -- <https://faculty.psau.edu.sa/filedownload/doc-12-pdf-532657fe8ef0e20eada1f34972a4b0dc-original.pdf>
+ 
+ -- <http://r-survey.r-forge.r-project.org/survey/survey-census.pdf>
+
+## Exemplo motivador
+
+- Dados de desempenho escolar por escola <http://r-survey.r-forge.r-project.org/survey/html/api.html>
+
+```{r}
+data(api) #dados de desempenho escolar
+```
+
+## 
+
+- `hsg` percentual de pais com graduação
+- `stype` é o tipo de escola (Elementary/Middle/High School)
+
+```{r}
+out <- apistrat %>%
+  mutate(hs_grad_pct = cut(hsg, c(0, 20, 100), include.lowest = TRUE,
+                           labels = c("<20%", "20+%"))) %>%
+  group_by(stype, hs_grad_pct) %>%
+  summarize(api_diff = weighted.mean(api00 - api99, pw),
+            n = n())
+
+```
+
+## Estimativas pontuais
+
+Variável `api-diff` 
+
+```{r, eval=F}
+ggplot(data = out, aes(x = stype, y = api_diff, group = hs_grad_pct, fill = hs_grad_pct)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_text(aes(y = 0, label = n), position = position_dodge(width = 0.9), vjust = -1)
+```
+
+##
+```{r, echo=F}
+ggplot(data = out, aes(x = stype, y = api_diff, group = hs_grad_pct, fill = hs_grad_pct)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_text(aes(y = 0, label = n), position = position_dodge(width = 0.9), vjust = -1)
+
+```
+
+
+## Estimativas intervalares
+
+- `survey_total`
+
+- `survey_mean`
+
+- `survey_median()`
+
+- `survey_ratio()`
+
+- `survey_quantile()`
+
+- Vamos ao live code
+
+## PNAD
+
+- PNADcIBGE <https://rpubs.com/BragaDouglas/335574>
+
+- ADSFree <http://asdfree.com/pesquisa-nacional-por-amostra-de-domicilios-continua-pnadc.html>
+
+## Exercício
+
+- Carregue os dados de exemplo do pacote survey `data(api)`
+
+- Qual a proporção de escolas por tipo? (use a variável `stype`)
+
+- Quantas escolas há por tipo? (use a variável `stype`)
+
+
+## Resolução
+```{r}
+strat_design <- apistrat %>%
+  as_survey(strata = stype, fpc = fpc, weight  = pw)
+```
+
+## 
+```{r}
+
+out <- strat_design %>%
+  mutate(hs_grad_pct = cut(hsg, c(0, 20, 100), include.lowest = TRUE,
+                           labels = c("<20%", "20+%"))) %>%
+  group_by(stype, hs_grad_pct) %>%
+  summarize(api_diff = survey_mean(api00 - api99, vartype = "ci"),
+            n=unweighted(n()))
+
+```
+
+
+##
+
+```{r}
+
+out %>% 
+  ggplot(aes(x = stype, y = api_diff, group = hs_grad_pct, fill = hs_grad_pct,
+                       ymax = api_diff_upp, ymin = api_diff_low)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_errorbar(position = position_dodge(width = 0.9), width = 0.1) +
+  geom_text(aes(y = 0, label = n), position = position_dodge(width = 0.9), vjust = -1)
+```
+
+
+
+## Exercício
+
+- Carregue os dados de exemplo do pacote survey `data(api)`, use o data.frame `apisrs` e expanda a amostra usando apenas variável fpc contendo a contagem finita de população `as_survey(fpc=fpc)`
+
+- Usando a variável `stype` crie uma nova variável indicando se a escola é de nível fundamental (categorias **E** e **M** de `stype`)  ou de nível médio (categoria *H* de `stype`). Dica: use `mutate`e `cas_when`.
+
+- Qual a proporção de escolas por nível (Fundamental, Médio)? (use a variável nova que você criou e a função `survey_mean`), 
+
+ -- Qual o coeficiente de varição dessa proporção?
+
+- Quantas escolas há por nível? (use a variável `stype` e a função `survey_total`)
+
+ -- Qual é o limite inferior e o limite superior da quantidade de escolas por tipo
+
+
+## Resolução
+```{r,eval=F}
+data(api)
+
+srs_design_srvyr <- apisrs %>% 
+  as_survey(fpc = fpc) %>%
+  mutate(nivel=case_when(
+    stype=="E"~"Fundamental",
+    stype=="M"~"Fundamental",
+    stype=="H"~"Médio"
+  ))
+
+```
+
+## 
+```{r,eval=F}
+
+resolucao <- srs_design_srvyr %>%
+  group_by(nivel) %>%
+  summarize(proporcao = survey_mean(vartype = "cv"),
+            n=survey_total(vartype = "ci"))
+
+```
+
+
+
+# ggplot
+
+## Princípios
+
+- O que você quer mostrar? <https://i1.wp.com/www.tatvic.com/blog/wp-content/uploads/2016/12/Pic_2.png>
+
+- Elementos que podem **destacar** ou **confundir** o que você quer mostrar.
+
+ -- Exemplo Codeplan
+
+- vamos tentar alternar "teoria" com live code
+
+
+## Recursos
+
+- R Cookbook <http://www.cookbook-r.com/Graphs/>
+
+- STHDA <http://www.sthda.com/english/wiki/be-awesome-in-ggplot2-a-practical-guide-to-be-highly-effective-r-software-and-data-visualization>
+
+- R Graph Gallery <https://www.r-graph-gallery.com/>
+
+- Extensões <http://www.ggplot2-exts.org/>
+
+## Elementos do ggplot
+
+- Dados
+
+- Geometrias
+
+- Estéticas
+
+- Escalas (estética)
+
+- Escalas (eixos)
+
+- Tema
+
+- Facet
+
+
+## Dados `data = `
+
+- Dado empilhado?
+
+- Cada coluna será uma entrada!
+
+
+## Geometrias `geom_`
+
+- geom_`tipo_de_geometria`
+
+- Recursos +
+
+- cheat sheet  <https://www.rstudio.com/wp-content/uploads/2016/03/ggplot2-cheatsheet-portuguese.pdf>
+
+- manual ggplot <https://ggplot2.tidyverse.org/reference/>
+
+
+## Estéticas `aes()`
+
+- `x` (`xmax` e `xmin`)
+
+- `y`
+
+- `color`
+
+- `fill`
+
+- `shape`
+
+- `group`
+
+- `size`
+
+
+## Escalas (estética) `scale_`
+
+- `scale_color_xx`
+
+- `scale_fill_xx`
+
+- `scale_shape_xx`
+
+
+## Escalas (eixos) `scale_x`
+
+- Contínua `scale_x_continuous`
+
+- Discreta `scale_x_discrete`
+
+- Série de tempo `zoo` --> `scale_yearmon`
+
+
+## Tema
+
+- Customização total da visualização
+
+- Eixos
+
+- Texto `element_text`
+
+- linhas de grade 
+
+## Facet
+
+- facet_grid
+
+- facet_wrap
+
+## Gráficos com interatividade
+
+- ggiraph
+
+- plotly (ggplotly)
+
+
+
+## Exercício
+
+- Carregue os dados de exemplo do pacote survey `data(api)`, use o data.frame `apisrs` 
+
+- Crie o objeto tbl_svy `amostra_expandida` expandindo a amostra aleatória simples usando apenas a variável (coluna) "pw", contendo o peso amostral. Dica: execute `as_survey(weight=pw)`. 
+
+- Usando a variável `stype` crie uma nova variável indicando se a escola é de nível fundamental (categorias **E** e **M** de `stype`)  ou de nível médio (categoria *H* de `stype`). Dica: use `mutate`e `case_when`.
+
+- Faça um gráfico de barras comparando a variação média das notas de 1999 (`api99`) e 2000 (`api00`) por nível e utilize as estimativas intervalares. Dica: olhe o código da aula 07, utilize `geom_errorbar` para a estimativa intervalar.
+
+
+## Resolução
+```{r,eval=F}
+data(api)
+
+amostra_expandida <- apisrs %>% 
+  as_survey(weight = pw) %>%
+  mutate(nivel=case_when(
+    stype=="E"~"Fundamental",
+    stype=="M"~"Fundamental",
+    stype=="H"~"Médio"
+  ))
+
+```
+
+
+##
+
+```{r,eval=F}
+
+out <- amostra_expandida %>%
+  group_by(nivel) %>%
+  summarise(api_diff = survey_mean(api00 - api99, vartype = "ci"))
+
+```
+
+
+## 
+
+```{r,eval=F}
+
+out %>% 
+  ggplot(aes(x = nivel, y = api_diff, fill = nivel,color=nivel,
+                       ymax = api_diff_upp, ymin = api_diff_low)) +
+  geom_bar(stat = "identity",alpha=0.6) +
+  geom_errorbar(width = 0,size=3) 
+
+```
+
+
+
+# ioslides no Rmarkdown
+
+## Trabalhando com slides no RMarkdown
+
+- Manual <https://rmarkdown.rstudio.com/lesson-11.html>
+
+- Galeria <https://rmarkdown.rstudio.com/gallery.html>
+
+File ==> New file ==> R Markdonw ==> Presentation
+
+- HTML (ioslides)
+
+## Trabalhando no .rmd
+
+- Opções e detalhes do ioslides <https://rmarkdown.rstudio.com/ioslides_presentation_format#overview>
+
+- Mais referências <https://bookdown.org/yihui/rmarkdown/ioslides-presentation.html>
+
+- Montando o arquivo `ìndex.rmd`
+
+
+## gh-pages
+
+- novo "branch"
+
+- nome `gh-pages`
+
+- arquivo `ìndex.html` precisa estar na raiz
+
+- a cada alteração de `ìndex.rmd` e `ìndex.html`, merge de master para gh-pages OU SIMPLESMENTE apague o branch e recrie o gh-pages
+
+- Suestão: só crie o branch gh-pages quando concluir seu trabalho e fizer o  
+
+- Seu site estará no endereço ==> nome_de_usuario.github.io/nome_do_repositorio/
+
+- ATENÇÃO: não esqueça da barra final no endereço
+
+
