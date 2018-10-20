@@ -3,9 +3,9 @@ title: "Coleta e Análise de Dados Secundários"
 author: "Frederico Bertholini"
 subtitle: Apresentação de slides com todas as aulas
 output:
+  beamer_presentation: default
   ioslides_presentation: 
     widescreen: yes
-  beamer_presentation: default
 ---
 
 ```{r setup, include=FALSE}
