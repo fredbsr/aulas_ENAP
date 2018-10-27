@@ -1,12 +1,15 @@
 ---
-title: "Prova Substitutiva de Coleta e Análise de Dados Secundários"
-author: "Frederico Bertholini"
+title: "Coleta e Análise de Dados Secundários"
+author: "Prova Substitutiva"
+institution: "ENAP"
 output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+## A prova deve ser entregue por e-mail a fredbsr@gmail, apenas com o arquivo em formato .R referente ao script com as respostas.
 
 # Parte 1 
 
@@ -41,9 +44,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 6. (0,5 ponto) Faça um join entre o objeto resultante da questão 4 e o objeto resultante da questão 5.
 
-7. (1 ponto) Por que não utilizamos nomes de variável iguais para a diferença entre as notas de 1999 e 2000 no data.frame oriundo da população (questão 4) e no data.frame oriundo da expansão da amostra (questão 5)?
+7. (0,5 ponto) Por que não utilizamos nomes de variável iguais para a diferença entre as notas de 1999 e 2000 no data.frame oriundo da população (questão 4) e no data.frame oriundo da expansão da amostra (questão 5)? (escreva a resposta a essa questão no próprio script, usando # para comentar)
 
 8. (2 pontos) Faça um gráfico de barras comparando os resultados de  por nível de ensino da escola (`nivel`) tanto para o dado amostral quanto para o dado populacional. Utilize as estimativas intervalares para construir intervalos de confiança. 
 
-9. (1 ponto) O que se pode concluir do gráfico?
+9. (1 ponto) O que se pode concluir do gráfico? (escreva a resposta a essa questão no próprio script, usando # para comentar)
 
